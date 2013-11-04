@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	default-autowire="byName"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+<context:component-scan
+base-package="org.geymer.examples">
+</context:component-scan>
+
+  <context:annotation-config />
+	<!-- Chapter 2 -->
+	<!-- Simple bean declaration -->
+	<bean id="userSimple" class="org.geymer.examples.User"></bean>
+
+	<!-- Simple bean declaration with construct-arg -->
+	<bean id="userConstructor" class="org.geymer.examples.User">
+		<constructor-arg value="tomcat" />
+		<constructor-arg value="" />
+	</bean>
+
+
+
+
+	<!-- Injecting object reference with constructor -->
+	<bean id="role" class="org.geymer.examples.Role" p:name="role1" primary="false">
+	</bean>
+
+
+	<bean id="userArgRef" class="org.geymer.examples.User">
+		<constructor-arg value="tomcat" />
+		<constructor-arg value="" />
+		<constructor-arg ref="role" />
+
+	</bean>
+	<!-- Factory method -->
+	<bean id="session" class="org.geymer.examples.Session"
+		factory-method="getInstance">
+	</bean>
+	<!-- bean scoping -->
+	<bean id="userSingleton" class="org.geymer.examples.User" scope="singleton"></bean>
+	<!-- Destroy and init method -->
+
+	<bean id="userDestroyInit" class="org.geymer.examples.User"
+		destroy-method="destroy" init-method="init">
+	</bean>
+	<!-- Inject values into bean -->
+	<bean id="userWithProperties" class="org.geymer.examples.User">
+		<property name="name" value="roman" />
+		<property name="password" value="qwerty" />
+		<property name="role" ref="role" />
+	</bean>
+
+	<!-- Inject inner beans using property -->
+	<bean id="userWithInnerProperties" class="org.geymer.examples.User">
+		<property name="name" value="roman" />
+		<property name="password" value="qwerty" />
+		<property name="role">
+			<bean class="org.geymer.examples.Role" />
+		</property>
+	</bean>
+
+	<!-- Inject inner beans using constructor -->
+	<bean id="userInnerWithConstructor" class="org.geymer.examples.User">
+		<constructor-arg value="tomcat" />
+		<constructor-arg value="" />
+		<constructor-arg>
+			<bean class="org.geymer.examples.Role" />
+		</constructor-arg>
+	</bean>
+	<!-- Wiring with help of p namespace -->
+	<bean id="userWithProperties2" class="org.geymer.examples.User"
+		p:name="roman" p:password="qwerty" p:role-ref="role" />
+
+	<!-- Wiring collections -->
+	<bean id="collection" class="org.geymer.examples.Instruments">
+		<property name="list">
+			<list>
+				<value>Guitar</value>
+				<value>Violin</value>
+				<value>Piano</value>
+			</list>
+		</property>
+		<property name="set">
+			<set>
+				<value>Guitar</value>
+				<value>Violin</value>
+				<ref bean="userSimple" />
+				<bean class="org.geymer.examples.User" p:name="setUser" />
+			</set>
+		</property>
+		<property name="map">
+			<map>
+				<entry key="Key 1" value="Guitar" />
+				<entry key="Key 2" value="Violin" />
+				<entry key="Key 3">
+					<bean class="org.geymer.examples.User" p:name="setUser" />
+				</entry>
+			</map>
+		</property>
+		<property name="props">
+			<props>
+				<prop key="admin">admin@tut.com</prop>
+				<prop key="support">support@tut.com</prop>
+			</props>
+		</property>
+	</bean>
+	<!-- Injecting null -->
+	<bean id="userWithNull" class="org.geymer.examples.User">
+		<constructor-arg value="tomcat" />
+		<constructor-arg>
+			<null />
+		</constructor-arg>
+		<constructor-arg>
+			<bean class="org.geymer.examples.Role" />
+		</constructor-arg>
+	</bean>
+
+	<!-- SpELL -->
+	<bean id="userWithSpEL" class="org.geymer.examples.User">
+		<constructor-arg value="#{userInnerWithConstructor.name}" />
+		<constructor-arg value="#{userWithProperties2.password}" />
+		<constructor-arg>
+			<bean class="org.geymer.examples.Role" />
+		</constructor-arg>
+	</bean>
+	<bean id="roleSpEL" class="org.geymer.examples.Role" p:name="#{collection.list[2]} " primary="false"
+		p:id="#{T(java.lang.Math).random()}" />
+<!-- Chapter3 -->
+<!-- Autowire -->
+<!-- byName -->
+<bean id="userWithWireByName" class="org.geymer.examples.User" autowire="byName" >
+		<property name="name" value="roman" />
+		<property name="password" value="qwerty" />
+	
+	</bean>
+
+<!-- byType -->
+	<bean id="autowireByType"
+		class="org.geymer.examples.SessionWorker" autowire="byType">
+	</bean>
+
+<!-- constructor -->
+<bean id="autowireByConstructor"
+		class="org.geymer.examples.SessionWorker" autowire="constructor">
+	</bean>
+<!-- Default -->
+<bean id="userWithWireByDefault" class="org.geymer.examples.User"  >
+		<property name="name" value="roman" />
+		<property name="password" value="qwerty" />
+	
+	</bean>
+	
+	<!-- autowire by annotation -->
+	
+	<bean id="sessionManager"
+		class="org.geymer.examples.SessionManager">
+	</bean>
+</beans>
+
+
+
